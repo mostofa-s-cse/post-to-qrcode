@@ -34,13 +34,19 @@ function pqrc_display_qr_code($content) {
 	}
 
 	/**
-	 * Post Dimension Check
+	 * Dimension Hook
 	 */
 
 	$dimension = apply_filters('pqrc_qrcode_dimension', '150x150');
 
+	/**
+	 * Image Attributes
+	 */
+
+	$image_attributes = apply_filters('pqrc_qrcode_image_attributes', null);
+
 	$image_src = sprintf('https://api.qrserver.com/v1/create-qr-code/?size=%s&data=%s',$dimension, $current_post_url);
-	$qr_code_html = sprintf("<div class='qrcode'><img src='%s' alt='%s'/></div>", $image_src, $current_post_title);
+	$qr_code_html = sprintf("<div class='qrcode'><img %s src='%s' alt='%s'/></div>",$image_attributes, $image_src, $current_post_title);
 
 	// Append the QR code to the content
 	$content .= $qr_code_html;
@@ -51,8 +57,10 @@ add_filter('the_content', 'pqrc_display_qr_code');
 
 
 
+/**
+ * themes.custom type and size
+ */
 
-//themes...............
 function philosophy_excluded_post_types($post_types) {
 	$post_types []= 'page';
 //	array_push($post_types, 'post');
