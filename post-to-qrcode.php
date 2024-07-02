@@ -33,8 +33,13 @@ function pqrc_display_qr_code($content) {
 		return $content;
 	}
 
+	/**
+	 * Post Dimension Check
+	 */
 
-	$image_src = sprintf('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%s', $current_post_url);
+	$dimension = apply_filters('pqrc_qrcode_dimension', '150x150');
+
+	$image_src = sprintf('https://api.qrserver.com/v1/create-qr-code/?size=%s&data=%s',$dimension, $current_post_url);
 	$qr_code_html = sprintf("<div class='qrcode'><img src='%s' alt='%s'/></div>", $image_src, $current_post_title);
 
 	// Append the QR code to the content
@@ -47,10 +52,18 @@ add_filter('the_content', 'pqrc_display_qr_code');
 
 
 
-
+//themes...............
 function philosophy_excluded_post_types($post_types) {
 	$post_types []= 'page';
 //	array_push($post_types, 'post');
 	return $post_types;
 }
 add_filter('pqrc_excluded_post_types','philosophy_excluded_post_types');
+
+
+
+function philosophy_qrcode_dimension($dimension) {
+	$dimension = '200x200';
+	return $dimension;
+}
+add_filter('pqrc_qrcode_dimension','philosophy_qrcode_dimension');
