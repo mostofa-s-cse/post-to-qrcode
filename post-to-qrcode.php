@@ -24,6 +24,16 @@ function pqrc_display_qr_code($content) {
 	$current_post_id = get_the_ID();
 	$current_post_title = get_the_title($current_post_id);
 	$current_post_url = urlencode(get_permalink($current_post_id));
+	$current_post_type = get_post_type($current_post_id);
+	/**
+	 * Post Type Check
+	 */
+	$excluded_post_types = apply_filters('pqrc_excluded_post_types', array());
+	if( in_array($current_post_type, $excluded_post_types)) {
+		return $content;
+	}
+
+
 	$image_src = sprintf('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%s', $current_post_url);
 	$qr_code_html = sprintf("<div class='qrcode'><img src='%s' alt='%s'/></div>", $image_src, $current_post_title);
 
@@ -33,3 +43,14 @@ function pqrc_display_qr_code($content) {
 	return $content;
 }
 add_filter('the_content', 'pqrc_display_qr_code');
+
+
+
+
+
+function philosophy_excluded_post_types($post_types) {
+	$post_types []= 'page';
+//	array_push($post_types, 'post');
+	return $post_types;
+}
+add_filter('pqrc_excluded_post_types','philosophy_excluded_post_types');
