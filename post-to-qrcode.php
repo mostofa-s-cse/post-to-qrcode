@@ -106,6 +106,7 @@ function qrcode_settings_init() {
 	add_settings_field('pqrc_select',__('Extra Select/Dropdown Field','post-to-qrcode'),'pqrc_display_select_field','general','pqrc_qrcode_section');
 	//checkbox.
 	add_settings_field('pqrc_checkbox',__('Select Countries','post-to-qrcode'),'pqrc_display_checkbox_group_field','general','pqrc_qrcode_section');
+	add_settings_field('pqrc_toggle',__('Toggle field','post-to-qrcode'),'pqrc_display_toggle_field','general','pqrc_qrcode_section');
 
 
 
@@ -113,6 +114,7 @@ function qrcode_settings_init() {
 	register_setting('general', 'pqrc_width',array('sanitize_callback' => 'esc_attr'));
 	register_setting('general', 'pqrc_select',array('sanitize_callback' => 'esc_attr'));
 	register_setting('general', 'pqrc_checkbox');
+	register_setting('general', 'pqrc_toggle');
 }
 
 
@@ -179,3 +181,22 @@ function philosophy_settings_country_list($countries) {
 	return $countries;
 }
 add_filter('pqrc_countries', 'philosophy_settings_country_list');
+
+
+function pqrc_assets($screen) {
+	if('options-general.php' == $screen) {
+		wp_enqueue_style("minitoggle-css", plugin_dir_url(__FILE__) . 'assets/css/minitoggle.css');
+		wp_enqueue_script("minitoggle-js", plugin_dir_url(__FILE__) . 'assets/js/minitoggle.js', array('jquery'),"1.0",true);
+		wp_enqueue_script("pqrc-main-js", plugin_dir_url(__FILE__) . 'assets/js/pqrc-main.js', array('jquery'),time(),true);
+	}
+}
+add_action("admin_enqueue_scripts",'pqrc_assets');
+
+
+
+
+
+
+function pqrc_display_toggle_field() {
+	echo  '<div class="toggle"></div>';
+}
