@@ -15,6 +15,20 @@
  * Domain Path:       /languages
  */
 
+$pqrc_countries = array(
+	__('Afghanistan','post-to-qrcode'),
+	__('Bangladesh','post-to-qrcode'),
+	__('India','post-to-qrcode'),
+	__('Maldives','post-to-qrcode'),
+	__('Nepal','post-to-qrcode'),
+);
+function pqrc_init() {
+	global $pqrc_countries;
+	$pqrc_countries = apply_filters('pqrc_countries', $pqrc_countries);
+}
+
+add_action("init","pqrc_init");
+
 function post_to_qrcode_load_textdomain() {
 	load_plugin_textdomain('posts-to-qrcode', false, dirname(__FILE__) . '/languages');
 }
@@ -124,17 +138,10 @@ function pqrc_section_callback() {
 
 //dropdown ...................
 function pqrc_display_select_field() {
+	global $pqrc_countries;
 	$option = get_option('pqrc_select');
-	$countries = array(
-		'None',
-		'Afghanistan',
-		'Bangladesh',
-		'India',
-		'Maldives',
-		'Nepal'
-	);
 	printf("<select id='%s' name='%s'>",'pqrc_select','pqrc_select');
-	foreach ($countries as $country) {
+	foreach ($pqrc_countries as $country) {
 		$selected = '';
 		if($option == $country) {
 			$selected = "selected";
@@ -146,15 +153,9 @@ function pqrc_display_select_field() {
 
 //checkbox
 function pqrc_display_checkbox_group_field() {
+	global $pqrc_countries;
 	$option = get_option('pqrc_checkbox');
-	$countries = array(
-		'Afghanistan',
-		'Bangladesh',
-		'India',
-		'Maldives',
-		'Nepal'
-	);
-	foreach ($countries as $country) {
+	foreach ($pqrc_countries as $country) {
 		$selected = '';
 		if(is_array($option) && in_array($country,$option)){
 			$selected = "checked";
@@ -168,3 +169,13 @@ function pqrc_display_checkbox_group_field() {
 
 add_action("admin_init", "qrcode_settings_init");
 
+
+function philosophy_settings_country_list($countries) {
+	array_push($countries, 'Spain');
+
+//	remove country
+//	$countries = array_diff($countries, array('Bangladesh','India'));
+
+	return $countries;
+}
+add_filter('pqrc_countries', 'philosophy_settings_country_list');
