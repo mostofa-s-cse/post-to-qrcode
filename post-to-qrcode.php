@@ -36,8 +36,11 @@ function pqrc_display_qr_code($content) {
 	/**
 	 * Dimension Hook
 	 */
-
-	$dimension = apply_filters('pqrc_qrcode_dimension', '150x150');
+	$height = get_option('pqrc_height');
+	$width = get_option('pqrc_width');
+	$height = $height?$height :180;
+	$width = $width?$width :180;
+	$dimension = apply_filters('pqrc_qrcode_dimension', "{$width}x{$height}");
 
 	/**
 	 * Image Attributes
@@ -70,8 +73,39 @@ add_filter('pqrc_excluded_post_types','philosophy_excluded_post_types');
 
 
 
-function philosophy_qrcode_dimension($dimension) {
-	$dimension = '200x200';
-	return $dimension;
+//function philosophy_qrcode_dimension($dimension) {
+//	$dimension = '200x200';
+//	return $dimension;
+//}
+//add_filter('pqrc_qrcode_dimension','philosophy_qrcode_dimension');
+
+
+
+// wp-admin setting add filed setting menu general page.
+function qrcode_settings_init() {
+	//add_settings_section
+	add_settings_section('pqrc_qrcode_section', __('QR Code General Settings'), 'pqrc_section_callback', 'general');
+	//add_settings_field
+	add_settings_field('pqrc_height',__('QR Code Height','post-to-qrcode'),'pqrc_display_height','general','pqrc_qrcode_section');
+	add_settings_field('pqrc_width',__('QR Code width','post-to-qrcode'),'pqrc_display_width','general','pqrc_qrcode_section');
+
+	register_setting('general', 'pqrc_height',array('sanitize_callback' => 'esc_attr'));
+	register_setting('general', 'pqrc_width',array('sanitize_callback' => 'esc_attr'));
 }
-add_filter('pqrc_qrcode_dimension','philosophy_qrcode_dimension');
+
+
+function pqrc_display_height() {
+	$height = get_option('pqrc_height');
+	printf("<input type='text' id='%s' name='%s' value='%s'/>", 'pqrc_height', 'pqrc_height', $height);
+}
+function pqrc_display_width() {
+	$width = get_option('pqrc_width');
+	printf("<input type='text' id='%s' name='%s' value='%s'/>", 'pqrc_width', 'pqrc_width', $width);
+}
+
+function pqrc_section_callback() {
+	echo "<p>".__('Settings for Post To QR Plugin','post-to-qrcode')."</p>";
+}
+
+
+add_action("admin_init", "qrcode_settings_init");
