@@ -86,26 +86,85 @@ function qrcode_settings_init() {
 	//add_settings_section
 	add_settings_section('pqrc_qrcode_section', __('QR Code General Settings'), 'pqrc_section_callback', 'general');
 	//add_settings_field
-	add_settings_field('pqrc_height',__('QR Code Height','post-to-qrcode'),'pqrc_display_height','general','pqrc_qrcode_section');
-	add_settings_field('pqrc_width',__('QR Code width','post-to-qrcode'),'pqrc_display_width','general','pqrc_qrcode_section');
+	add_settings_field('pqrc_height',__('QR Code Height','post-to-qrcode'),'pqrc_display_field','general','pqrc_qrcode_section',array('pqrc_height'));
+	add_settings_field('pqrc_width',__('QR Code Width','post-to-qrcode'),'pqrc_display_field','general','pqrc_qrcode_section',array('pqrc_width'));
+	//dropdown...
+	add_settings_field('pqrc_select',__('Extra Select/Dropdown Field','post-to-qrcode'),'pqrc_display_select_field','general','pqrc_qrcode_section');
+	//checkbox.
+	add_settings_field('pqrc_checkbox',__('Select Countries','post-to-qrcode'),'pqrc_display_checkbox_group_field','general','pqrc_qrcode_section');
+
+
 
 	register_setting('general', 'pqrc_height',array('sanitize_callback' => 'esc_attr'));
 	register_setting('general', 'pqrc_width',array('sanitize_callback' => 'esc_attr'));
+	register_setting('general', 'pqrc_select',array('sanitize_callback' => 'esc_attr'));
+	register_setting('general', 'pqrc_checkbox');
 }
 
 
-function pqrc_display_height() {
-	$height = get_option('pqrc_height');
-	printf("<input type='text' id='%s' name='%s' value='%s'/>", 'pqrc_height', 'pqrc_height', $height);
-}
-function pqrc_display_width() {
-	$width = get_option('pqrc_width');
-	printf("<input type='text' id='%s' name='%s' value='%s'/>", 'pqrc_width', 'pqrc_width', $width);
+//function pqrc_display_height() {
+//	$height = get_option('pqrc_height');
+//	printf("<input type='text' id='%s' name='%s' value='%s'/>", 'pqrc_height', 'pqrc_height', $height);
+//}
+
+//function pqrc_display_width() {
+//	$width = get_option('pqrc_width');
+//	printf("<input type='text' id='%s' name='%s' value='%s'/>", 'pqrc_width', 'pqrc_width', $width);
+//}
+
+
+function pqrc_display_field($args) {
+	$options = get_option($args[0]);
+	printf("<input type='text' id='%s' name='%s' value='%s' />",$args[0],$args[0],$options);
 }
 
 function pqrc_section_callback() {
 	echo "<p>".__('Settings for Post To QR Plugin','post-to-qrcode')."</p>";
 }
 
+//dropdown ...................
+function pqrc_display_select_field() {
+	$option = get_option('pqrc_select');
+	$countries = array(
+		'None',
+		'Afghanistan',
+		'Bangladesh',
+		'India',
+		'Maldives',
+		'Nepal'
+	);
+	printf("<select id='%s' name='%s'>",'pqrc_select','pqrc_select');
+	foreach ($countries as $country) {
+		$selected = '';
+		if($option == $country) {
+			$selected = "selected";
+		}
+		printf("<option value='%s' %s>%s</option>",$country,$selected,$country);
+	}
+	echo "</select>";
+}
+
+//checkbox
+function pqrc_display_checkbox_group_field() {
+	$option = get_option('pqrc_checkbox');
+	$countries = array(
+		'Afghanistan',
+		'Bangladesh',
+		'India',
+		'Maldives',
+		'Nepal'
+	);
+	foreach ($countries as $country) {
+		$selected = '';
+		if(is_array($option) && in_array($country,$option)){
+			$selected = "checked";
+		}
+		printf("<input type='checkbox' name='pqrc_checkbox[]' value='%s' %s/> %s <br>",$country,$selected,$country);
+	}
+}
+
+
+
 
 add_action("admin_init", "qrcode_settings_init");
+
